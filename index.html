@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <title>日本語Kids</title>
+
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+
+  <meta name="theme-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="日本語Kids">
+</head>
+
+<body>
+
+<header>
+  <div>
+    <h1>🇯🇵 日本語Kids</h1>
+    <p>日本語の動画だけを見よう！</p>
+  </div>
+
+  <button id="parentButton" type="button">
+    🔒 おとな
+  </button>
+</header>
+
+<main>
+
+  <!-- 初回設定 -->
+  <section id="setupView" class="card hidden">
+
+    <h2>はじめの設定</h2>
+
+    <p>
+      おとなの人が設定してください。
+    </p>
+
+    <label>
+      おとな用PIN
+      <input
+        id="setupPin"
+        type="password"
+        inputmode="numeric"
+        maxlength="8"
+        placeholder="例：1234">
+    </label>
+
+    <label>
+      YouTube APIキー
+      <input
+        id="setupApiKey"
+        type="password"
+        placeholder="APIキーを入力">
+    </label>
+
+    <button id="saveSetup" class="primary">
+      設定を保存
+    </button>
+
+  </section>
+
+
+  <!-- 子ども用画面 -->
+  <section id="homeView">
+
+    <div class="hero">
+      <h2>なにをみる？</h2>
+      <p>
+        おとなが選んだ日本語チャンネルだけ表示します
+      </p>
+    </div>
+
+    <div class="actions">
+
+      <button id="refreshVideos" class="primary">
+        🔄 どうがをよみこむ
+      </button>
+
+      <button id="shuffleVideos">
+        🎲 シャッフル
+      </button>
+
+    </div>
+
+    <div id="message"></div>
+
+    <div id="videoGrid" class="video-grid"></div>
+
+  </section>
+
+
+  <!-- 動画再生 -->
+  <section id="watchView" class="hidden">
+
+    <button id="backButton">
+      ← どうがにもどる
+    </button>
+
+    <div class="player-wrap">
+      <div id="player"></div>
+    </div>
+
+    <h2 id="playingTitle"></h2>
+
+    <div class="player-buttons">
+
+      <button id="previousVideo">
+        ⏮ まえ
+      </button>
+
+      <button id="nextVideo" class="primary">
+        つぎ ⏭
+      </button>
+
+    </div>
+
+    <p class="note">
+      動画が終わると、許可された次の動画を再生します。
+    </p>
+
+  </section>
+
+
+  <!-- 親用ログイン -->
+  <section id="pinView" class="card hidden">
+
+    <h2>🔒 おとな用画面</h2>
+
+    <label>
+      PINを入力してください
+
+      <input
+        id="pinInput"
+        type="password"
+        inputmode="numeric"
+        maxlength="8">
+
+    </label>
+
+    <button id="unlockButton" class="primary">
+      開く
+    </button>
+
+    <button id="cancelPin">
+      キャンセル
+    </button>
+
+  </section>
+
+
+  <!-- 親用設定 -->
+  <section id="adminView" class="hidden">
+
+    <div class="admin-header">
+
+      <h2>🔒 おとな用設定</h2>
+
+      <button id="closeAdmin">
+        子ども画面へ
+      </button>
+
+    </div>
+
+
+    <div class="card">
+
+      <h3>日本語チャンネルを追加</h3>
+
+      <p>
+        子どもに見せたいYouTubeチャンネルを検索します。
+      </p>
+
+      <div class="search-row">
+
+        <input
+          id="channelSearch"
+          type="search"
+          placeholder="例：子ども うた">
+
+        <button id="searchChannel" class="primary">
+          検索
+        </button>
+
+      </div>
+
+      <div id="channelResults"></div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h3>許可しているチャンネル</h3>
+
+      <div id="allowedChannels"></div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h3>日本語チェック</h3>
+
+      <label class="check-label">
+
+        <input
+          id="strictJapanese"
+          type="checkbox">
+
+        ひらがな・カタカナが入っている動画だけ表示する
+
+      </label>
+
+      <p class="note">
+        ONをおすすめします。
+      </p>
+
+    </div>
+
+
+    <div class="card">
+
+      <h3>設定変更</h3>
+
+      <label>
+        YouTube APIキー
+
+        <input
+          id="adminApiKey"
+          type="password">
+
+      </label>
+
+      <label>
+        おとな用PIN
+
+        <input
+          id="adminPin"
+          type="password"
+          inputmode="numeric"
+          maxlength="8">
+
+      </label>
+
+      <button id="saveAdminSettings" class="primary">
+        保存
+      </button>
+
+    </div>
+
+  </section>
+
+</main>
+
+
+<script src="https://www.youtube.com/iframe_api"></script>
+<script src="app.js"></script>
+
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("./sw.js");
+    });
+  }
+</script>
+
+</body>
+</html>
