@@ -1,4 +1,4 @@
-const CACHE_NAME = "japanese-kids-v1";
+const CACHE_NAME = "japanese-kids-v2";
 
 const APP_FILES = [
   "./",
