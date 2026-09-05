@@ -1,0 +1,10 @@
+{
+  "name": "日本語Kids",
+  "short_name": "日本語Kids",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "lang": "ja",
+  "icons": []
+}
