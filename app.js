@@ -72,6 +72,284 @@ function showOnly(view) {
   view.classList.remove("hidden");
 }
 
+function initializeTimer() {
+
+  const select =
+    document.getElementById("timerMinutes");
+
+  select.innerHTML = "";
+
+  for (let i = 1; i <= 60; i++) {
+
+    const option =
+      document.createElement("option");
+
+    option.value = i;
+
+    option.textContent =
+      `${i}分`;
+
+    if (i === 30) {
+      option.selected = true;
+    }
+
+    select.appendChild(option);
+  }
+
+  document.getElementById("startTimer")
+    .addEventListener(
+      "click",
+      startViewingTimer
+    );
+
+  document.getElementById("cancelTimer")
+    .addEventListener(
+      "click",
+      cancelViewingTimer
+    );
+
+  document.getElementById("timeUpParentButton")
+    .addEventListener(
+      "click",
+      parentUnlockFromTimeUp
+    );
+
+  checkViewingTimer();
+
+  timerInterval =
+    setInterval(
+      checkViewingTimer,
+      1000
+    );
+}
+
+
+function startViewingTimer() {
+
+  const minutes =
+    Number(
+      document.getElementById(
+        "timerMinutes"
+      ).value
+    );
+
+  if (
+    !Number.isInteger(minutes) ||
+    minutes < 1 ||
+    minutes > 60
+  ) {
+    alert(
+      "1分〜60分で設定してください。"
+    );
+
+    return;
+  }
+
+  const endTime =
+    Date.now() +
+    minutes * 60 * 1000;
+
+  localStorage.setItem(
+    TIMER_END_KEY,
+    String(endTime)
+  );
+
+  localStorage.removeItem(
+    TIMER_LOCK_KEY
+  );
+
+  hideTimeUpOverlay();
+
+  checkViewingTimer();
+
+  alert(
+    `${minutes}分のタイマーを開始しました。`
+  );
+}
+
+
+function cancelViewingTimer() {
+
+  localStorage.removeItem(
+    TIMER_END_KEY
+  );
+
+  localStorage.removeItem(
+    TIMER_LOCK_KEY
+  );
+
+  hideTimeUpOverlay();
+
+  updateTimerStatus(
+    "タイマーは設定されていません。"
+  );
+}
+
+
+function checkViewingTimer() {
+
+  const locked =
+    localStorage.getItem(
+      TIMER_LOCK_KEY
+    ) === "1";
+
+  if (locked) {
+
+    showTimeUpOverlay();
+
+    return;
+  }
+
+  const endTime =
+    Number(
+      localStorage.getItem(
+        TIMER_END_KEY
+      ) || 0
+    );
+
+  if (!endTime) {
+
+    updateTimerStatus(
+      "タイマーは設定されていません。"
+    );
+
+    return;
+  }
+
+  const remaining =
+    endTime - Date.now();
+
+  if (remaining <= 0) {
+
+    timeUp();
+
+    return;
+  }
+
+  const totalSeconds =
+    Math.ceil(
+      remaining / 1000
+    );
+
+  const minutes =
+    Math.floor(
+      totalSeconds / 60
+    );
+
+  const seconds =
+    totalSeconds % 60;
+
+  updateTimerStatus(
+    `残り ${minutes}分 ${String(seconds).padStart(2, "0")}秒`
+  );
+}
+
+
+function updateTimerStatus(text) {
+
+  const status =
+    document.getElementById(
+      "timerStatus"
+    );
+
+  if (status) {
+    status.textContent = text;
+  }
+}
+
+
+function timeUp() {
+
+  localStorage.setItem(
+    TIMER_LOCK_KEY,
+    "1"
+  );
+
+  localStorage.removeItem(
+    TIMER_END_KEY
+  );
+
+  try {
+
+    if (
+      ytPlayer &&
+      ytPlayer.stopVideo
+    ) {
+      ytPlayer.stopVideo();
+    }
+
+  } catch (e) {
+
+    console.error(e);
+  }
+
+  showTimeUpOverlay();
+}
+
+
+function isTimeLocked() {
+
+  return (
+    localStorage.getItem(
+      TIMER_LOCK_KEY
+    ) === "1"
+  );
+}
+
+
+function showTimeUpOverlay() {
+
+  const overlay =
+    document.getElementById(
+      "timeUpOverlay"
+    );
+
+  overlay.classList.remove(
+    "hidden"
+  );
+}
+
+
+function hideTimeUpOverlay() {
+
+  const overlay =
+    document.getElementById(
+      "timeUpOverlay"
+    );
+
+  overlay.classList.add(
+    "hidden"
+  );
+}
+
+
+function parentUnlockFromTimeUp() {
+
+  const pin =
+    prompt(
+      "おとな用PINを入力してください。"
+    );
+
+  if (pin === null) {
+    return;
+  }
+
+  if (pin !== settings.pin) {
+
+    alert(
+      "PINが違います。"
+    );
+
+    return;
+  }
+
+  cancelViewingTimer();
+
+  renderAllowedChannels();
+
+  showOnly(adminView);
+}
+
 function initializeApp() {
   loadSettings();
 
