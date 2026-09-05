@@ -12,6 +12,14 @@ let currentIndex = 0;
 let ytPlayer = null;
 let playerReady = false;
 
+const TIMER_END_KEY =
+  "japaneseKidsTimerEndAt";
+
+const TIMER_LOCK_KEY =
+  "japaneseKidsTimerLocked";
+
+let timerInterval = null;
+
 const setupView = document.getElementById("setupView");
 const homeView = document.getElementById("homeView");
 const watchView = document.getElementById("watchView");
