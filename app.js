@@ -779,6 +779,13 @@ document.getElementById("shuffleVideos")
 
 function playVideo(index) {
 
+  if (isTimeLocked()) {
+
+    showTimeUpOverlay();
+
+    return;
+  }
+
   if (!videos.length) {
     return;
   }
@@ -828,13 +835,26 @@ function createPlayer(videoId) {
 
       onStateChange: event => {
 
-        if (
-          event.data ===
-          YT.PlayerState.ENDED
-        ) {
-          nextVideo();
-        }
-      }
+  if (
+    isTimeLocked() &&
+    event.data ===
+    YT.PlayerState.PLAYING
+  ) {
+
+    event.target.stopVideo();
+
+    showTimeUpOverlay();
+
+    return;
+  }
+
+  if (
+    event.data ===
+    YT.PlayerState.ENDED
+  ) {
+    nextVideo();
+  }
+}
     }
   });
 }
@@ -843,6 +863,11 @@ window.onYouTubeIframeAPIReady = function () {
 };
 
 function nextVideo() {
+
+if (isTimeLocked()) {
+  showTimeUpOverlay();
+  return;
+}
 
   if (!videos.length) {
     return;
@@ -924,3 +949,5 @@ if (storedVideos) {
 }
 
 initializeApp();
+
+initializeTimer();
